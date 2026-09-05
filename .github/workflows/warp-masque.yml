@@ -51,16 +51,6 @@ jobs:
       - name: 生成 mihomo 配置
         run: python3 scripts/gen_masque.py config.json dist
 
-      - name: 校验配置可加载
-        run: |
-          set -euo pipefail
-          URL=$(curl -sL https://api.github.com/repos/MetaCubeX/mihomo/releases \
-                | grep -o 'https://[^"]*mihomo-linux-amd64-alpha[^"]*\.gz' | head -1)
-          curl -sL -o mihomo.gz "$URL"
-          gunzip -f mihomo.gz
-          chmod +x mihomo
-          mkdir -p check
-
       - name: Commit Changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
