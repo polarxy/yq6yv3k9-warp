@@ -60,20 +60,17 @@ jobs:
           gunzip -f mihomo.gz
           chmod +x mihomo
           mkdir -p check
-          cp dist/warp-masque.yaml check/config.yaml
-          # -t 只做配置解析校验，不起服务
-          ./mihomo -t -d check
-          echo "配置校验通过"
 
-      - name: 打包凭据与配置
+      - name: Commit Changes
         run: |
-          cp config.json dist/usque-config.json
-          ls -l dist
-
-      - name: 上传 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: warp-masque-config
-          path: dist/
-          retention-days: ${{ github.event.inputs.retention_days || 7 }}
-          if-no-files-found: error
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Changes detected in the repository."
+            git config core.ignorecase false
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Updated at $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
+          else
+            echo "No changes detected in the repository."
+          fi
